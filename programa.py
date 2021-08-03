@@ -269,6 +269,17 @@ def programa():
             print('No es posible encontrar la persona')
     
     
+@app.route('/famosos/signo')
+def get_signo():
+    try:
+        dia = int(request.args.get('dia'))
+        mes = int(request.args.get('mes'))
+        signo = calcular_signo(mes,dia)
+        s = {'signo':signo}
+        return json.dumps(s,ensure_ascii=False).encode('utf8')
+    except:
+        return json.dumps(404)
+
 
 ## ------------------------------------------------------------------------------------------------------- ##
 ## ------------------------------------------------------------------------------------------------------- ##
