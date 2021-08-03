@@ -18,7 +18,7 @@ todays_date = date.today()
 meses_nombres = {'enero': 1,'febrero': 2,'marzo': 3,'abril': 4,'mayo': 5,'junio': 6,'julio': 7,'agosto': 8,'septiembre': 9,'octubre': 10,'noviembre': 11,'diciembre': 12}
 key_list = list(meses_nombres.keys())
 
-signo = ("Capricornio", "Acuario", "Piscis", "Aries", "Tauro", "Géminis", "Cáncer", "Leo", "Virgo", "Libra", "Escorpio", "Sagitario")
+signo = ("Capricornio", "Acuario", "Piscis", "Aries", "Tauro", "GÃ©minis", "CÃ¡ncer", "Leo", "Virgo", "Libra", "Escorpio", "Sagitario")
 fechas = (20, 19, 20, 20, 21, 21, 22, 22, 22, 22, 22, 21)
 
 WIKI_REQUEST_IMAGEN = 'http://en.wikipedia.org/w/api.php?action=query&prop=pageimages&format=json&piprop=original&titles='
@@ -100,7 +100,7 @@ def opcion_2_sin_api(pagina):
         lista = fecha.split(" ") # guarda en una lista todos los elementos del string
 
         for i in lista:
-          if i in meses_nombres: # se fija cual de esos está dentro del diccionario de meses
+          if i in meses_nombres: # se fija cual de esos estÃ¡ dentro del diccionario de meses
             mes = i # se guarda el nombre del mes y corta
             break
 
@@ -119,6 +119,17 @@ def opcion_2_sin_api(pagina):
 
         edad = calcular_edad(anio)
         #print(edad)
+
+        try:
+            ## ---------- IMAGEN --------------- ##
+        
+            response  = requests.get(WIKI_REQUEST_IMAGEN + pagina.title)
+            json_data = json.loads(response.text)
+            imagen_persona = list(json_data['query']['pages'].values())[0]['original']['source']
+
+            print(imagen_persona)
+        except:
+            imagen_persona = 0
         
         # dice toda la informacion de la persona
         
@@ -130,11 +141,11 @@ def opcion_2_sin_api(pagina):
         
         print('Edad:',edad)
         
-        print('Signo del Zodíaco:',signo_persona)
+        print('Signo del ZodÃ­aco:',signo_persona)
 
-        print('Información extraída de:',pagina.url)
+        print('InformaciÃ³n extraÃ­da de:',pagina.url)
 
-        informacion = {'Nombre':pagina.title,'d_nac':dia,'m_nac':mes,'a_nac':anio,'edad':edad,'signo':signo_persona,'url':pagina.url}
+        informacion = {'murio':'false','nombre':pagina.title,'d_nac':dia,'m_nac':mes,'a_nac':anio,'edad':edad,'signo':signo_persona,'pagina_url':pagina.url,'img':imagen_persona}
         
         return json.dumps(informacion,ensure_ascii=False).encode('utf8')
 
@@ -149,7 +160,7 @@ def opcion_1_usa_api(pagina):
         
         ## ---------- NACIMIENTO ----------- ##
         birth_date = json_infobox.split("birth_date")[1]
-        birth_date = birth_date.split("}")[0] # se queda con la fecha de cumpleaños de la persona
+        birth_date = birth_date.split("}")[0] # se queda con la fecha de cumpleaÃ±os de la persona
 
         birth_date = re.sub('[^a-zA-Z0-9\n\.]', ' ', birth_date) # cambia todos los simbolos por espacios
 
@@ -178,7 +189,7 @@ def opcion_1_usa_api(pagina):
             print(dia_muerte,mes_muerte,anio_muerte)
 
         except:
-            print('La persona no murió.')
+            print('La persona no muriÃ³.')
             #anio_muerte = 0
             pass
             
@@ -212,20 +223,20 @@ def opcion_1_usa_api(pagina):
         #print(murio)
         if (murio):
             print('Fecha de Muerte:',dia_muerte,"de",mes_muerte_nombre,'de',anio_muerte)
-            print('La persona tendría:',edad,'años.')
+            print('La persona tendrÃ­a:',edad,'aÃ±os.')
         else:
             print('Edad:',edad)
 
-        print('Signo del Zodíaco:',signo)
+        print('Signo del ZodÃ­aco:',signo)
 
-        print('Información extraída de:',pagina.url)
+        print('InformaciÃ³n extraÃ­da de:',pagina.url)
 
         print('Imagen de la persona:',imagen_persona)
 
         if(murio):
-            informacion = {'murio':murio,'nombre':pagina.title,'d_nac':dia_nacimiento,'m_nac':mes_nacimiento_nombre,'a_nac':anio_nacimiento,'d_muerte':dia_muerte,'m_muerte':mes_muerte_nombre,'a_muerte':anio_muerte,'signo':signo,'pagina_url':pagina.url,'img': imagen_persona}
+            informacion = {'murio':murio,'nombre':pagina.title,'d_nac':dia_nacimiento,'m_nac':mes_nacimiento_nombre,'a_nac':anio_nacimiento,'d_muerte':dia_muerte,'m_muerte':mes_muerte_nombre,'a_muerte':anio_muerte,'signo':signo,'edad': edad,'pagina_url':pagina.url,'img': imagen_persona}
         else:
-           informacion = {'murio':murio,'nombre':pagina.title,'d_nac':dia_nacimiento,'m_nac':mes_nacimiento_nombre,'a_nac':anio_nacimiento,'signo':signo,'pagina_url':pagina.url,'img': imagen_persona}
+           informacion = {'murio':murio,'nombre':pagina.title,'d_nac':dia_nacimiento,'m_nac':mes_nacimiento_nombre,'a_nac':anio_nacimiento,'signo':signo,'pagina_url':pagina.url,'edad': edad,'img': imagen_persona}
 
         
         return json.dumps(informacion,ensure_ascii=False).encode('utf8')
@@ -258,6 +269,9 @@ def programa():
             print('No es posible encontrar la persona')
     
     
+
+## ------------------------------------------------------------------------------------------------------- ##
+## ------------------------------------------------------------------------------------------------------- ##
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host="0.0.0.0")
